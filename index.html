@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Do you love me?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffe1e6;
+    --ink: #1c1418;
+    --btn: #f25a78;
+    --btn-dark: #d83f5f;
+    --card: #ffffff;
+    --soft: #ffc2cd;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#2a1a1f; --ink:#ffe9ee; --card:#3a262c; --soft:#5a3440; }
+  }
+  :root[data-theme="dark"] { --bg:#2a1a1f; --ink:#ffe9ee; --card:#3a262c; --soft:#5a3440; }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Baloo 2", "Comic Sans MS", "Segoe UI", system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .screen {
+    position: relative;
+    height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .hidden { display: none !important; }
+
+  .pic {
+    width: min(240px, 62vw);
+    aspect-ratio: 1;
+    background: var(--card);
+    border-radius: 6px;
+    display: grid; place-items: center;
+  }
+  .pic svg { width: 100%; height: 100%; display: block; }
+
+  h1 {
+    font-weight: 800;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    line-height: 1.1;
+    margin: 28px 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .btn {
+    font: inherit; font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    background: var(--btn);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--btn-dark), 0 8px 18px rgba(242,90,120,.35);
+    transition: transform .15s ease;
+  }
+  .btn:active { transform: translateY(2px); }
+  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  #yesBtn { transition: transform .25s ease, font-size .25s ease, padding .25s ease; }
+  #noBtn {
+    position: absolute;
+    left: 50%; top: 50%;
+    transition: left .18s ease-out, top .18s ease-out;
+    z-index: 5;
+  }
+  .hint { margin-top: 14px; font-size: .95rem; opacity: .7; min-height: 1.4em; }
+
+  /* heart loader */
+  .heart {
+    width: 70px; height: 70px;
+    background: var(--btn);
+    transform: rotate(45deg);
+    position: relative;
+    animation: beat 0.9s ease-in-out infinite;
+  }
+  .heart::before, .heart::after {
+    content: ""; position: absolute; width: 70px; height: 70px;
+    background: var(--btn); border-radius: 50%;
+  }
+  .heart::before { left: -35px; }
+  .heart::after { top: -35px; }
+  @keyframes beat {
+    0%, 100% { transform: rotate(45deg) scale(0.85); }
+    50% { transform: rotate(45deg) scale(1.1); }
+  }
+  .loading-text { margin-top: 40px; font-weight: 700; font-size: 1.2rem; }
+
+  /* result */
+  .bounce { animation: hop 1s ease-in-out infinite; transform-origin: bottom center; }
+  @keyframes hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .float-heart {
+    position: fixed; bottom: -40px; font-size: 26px; pointer-events: none;
+    animation: rise linear forwards;
+  }
+  @keyframes rise { to { transform: translateY(-110vh) rotate(25deg); opacity: 0; } }
+  .again { margin-top: 22px; background: transparent; color: var(--ink); box-shadow: none; text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heart, .bounce { animation: none; }
+    .float-heart { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STEP 1: Question -->
+<section class="screen" id="questionContainer">
+  <div class="pic" aria-hidden="true">
+    <svg viewBox="0 0 240 240">
+      <text x="120" y="48" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="30" fill="#1c1418">hmm?</text>
+      <!-- white bunny poking -->
+      <g>
+        <ellipse cx="170" cy="70" rx="12" ry="30" fill="#fff" stroke="#1c1418" stroke-width="3"/>
+        <ellipse cx="195" cy="78" rx="11" ry="28" fill="#fff" stroke="#1c1418" stroke-width="3" transform="rotate(18 195 78)"/>
+        <path d="M130 240 C120 170 130 110 175 105 C220 100 232 160 230 240 Z" fill="#fff" stroke="#1c1418" stroke-width="3"/>
+        <circle cx="165" cy="140" r="4" fill="#1c1418"/>
+        <circle cx="198" cy="138" r="4" fill="#1c1418"/>
+        <path d="M176 152 q5 5 10 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="208" cy="156" rx="9" ry="6" fill="#ffb3c1"/>
+        <!-- poking arm -->
+        <path d="M140 175 q-20 -10 -30 -2" stroke="#1c1418" stroke-width="3" fill="#fff"/>
+        <circle cx="110" cy="172" r="8" fill="#fff" stroke="#1c1418" stroke-width="3"/>
+      </g>
+      <!-- brown cat -->
+      <g>
+        <path d="M30 120 L40 88 L62 110 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M112 110 L128 86 L134 122 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M18 240 C10 170 30 110 82 108 C135 106 150 170 140 240 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3"/>
+        <path d="M58 146 q6 -6 12 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="100" cy="146" r="4" fill="#1c1418"/>
+        <path d="M78 160 q4 -3 8 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="44" cy="160" rx="10" ry="7" fill="#f7a36b"/>
+        <ellipse cx="118" cy="162" rx="10" ry="7" fill="#f7a36b"/>
+        <!-- phone -->
+        <rect x="66" y="182" width="26" height="40" rx="5" fill="#8fc7ff" stroke="#1c1418" stroke-width="3"/>
+        <circle cx="62" cy="200" r="8" fill="#c98a5e" stroke="#1c1418" stroke-width="3"/>
+        <circle cx="96" cy="200" r="8" fill="#c98a5e" stroke="#1c1418" stroke-width="3"/>
+      </g>
+    </svg>
+  </div>
+  <h1>Do you love me?</h1>
+  <button class="btn" id="yesBtn">Yes</button>
+  <button class="btn" id="noBtn">No</button>
+  <p class="hint" id="hint"></p>
+</section>
+
+<!-- STEP 2: Heart loader -->
+<section class="screen hidden" id="heartLoader">
+  <div class="heart" aria-hidden="true"></div>
+  <p class="loading-text">Checking your heart…</p>
+</section>
+
+<!-- STEP 3: Result -->
+<section class="screen hidden" id="resultContainer">
+  <div class="pic bounce" aria-hidden="true">
+    <svg viewBox="0 0 240 240">
+      <!-- hearts -->
+      <path d="M120 58 c-10 -18 -38 -10 -30 10 c5 12 30 26 30 26 c0 0 25 -14 30 -26 c8 -20 -20 -28 -30 -10z" fill="#f25a78"/>
+      <path d="M40 60 c-5 -9 -19 -5 -15 5 c2 6 15 13 15 13 c0 0 13 -7 15 -13 c4 -10 -10 -14 -15 -5z" fill="#ff8fa6"/>
+      <path d="M200 50 c-5 -9 -19 -5 -15 5 c2 6 15 13 15 13 c0 0 13 -7 15 -13 c4 -10 -10 -14 -15 -5z" fill="#ff8fa6"/>
+      <!-- cat -->
+      <path d="M36 138 L44 108 L66 128 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M104 126 L118 104 L124 138 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M20 240 C12 180 34 124 82 124 C128 124 140 180 132 240 Z" fill="#c98a5e" stroke="#1c1418" stroke-width="3"/>
+      <path d="M60 164 q6 -6 12 0 M92 164 q6 -6 12 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M76 178 q6 6 12 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="178" rx="10" ry="7" fill="#f7a36b"/>
+      <ellipse cx="116" cy="178" rx="10" ry="7" fill="#f7a36b"/>
+      <!-- bunny -->
+      <ellipse cx="160" cy="92" rx="11" ry="28" fill="#fff" stroke="#1c1418" stroke-width="3" transform="rotate(-10 160 92)"/>
+      <ellipse cx="190" cy="94" rx="11" ry="28" fill="#fff" stroke="#1c1418" stroke-width="3" transform="rotate(12 190 94)"/>
+      <path d="M118 240 C112 180 130 120 176 120 C222 120 234 180 228 240 Z" fill="#fff" stroke="#1c1418" stroke-width="3"/>
+      <path d="M152 160 q6 -6 12 0 M186 160 q6 -6 12 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M169 174 q6 6 12 0" stroke="#1c1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="144" cy="176" rx="9" ry="6" fill="#ffb3c1"/>
+      <ellipse cx="210" cy="176" rx="9" ry="6" fill="#ffb3c1"/>
+      <!-- hug arms -->
+      <path d="M128 206 q-20 -6 -28 4" stroke="#1c1418" stroke-width="3" fill="#fff"/>
+      <path d="M118 212 q20 -4 30 6" stroke="#1c1418" stroke-width="3" fill="none"/>
+    </svg>
+  </div>
+  <h1>Mujhe pata tha! 💖</h1>
+  <p class="hint" style="opacity:.85">I love you too.</p>
+  <button class="btn again" id="againBtn">Play again</button>
+</section>
+
+<script>
+  const questionContainer = document.getElementById("questionContainer");
+  const heartLoader = document.getElementById("heartLoader");
+  const resultContainer = document.getElementById("resultContainer");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const hint = document.getElementById("hint");
+  const againBtn = document.getElementById("againBtn");
+
+  const teases = [
+    "Arre, pakad ke dikhao 😜",
+    "Galat button hai 🙈",
+    "Soch lo phir se…",
+    "Pakka? 🥺",
+    "No option kharab hai 😌",
+    "Bas Yes daba do na 💕"
+  ];
+  let tries = 0;
+
+  // Place No beside Yes on load
+  function placeNoInitially() {
+    const r = yesBtn.getBoundingClientRect();
+    const c = questionContainer.getBoundingClientRect();
+    noBtn.style.left = (r.left - c.left - noBtn.offsetWidth - 24) + "px";
+    noBtn.style.top = (r.top - c.top) + "px";
+  }
+
+  // Move No to a random spot inside the screen (never under Yes, never off-screen)
+  function runAway(e) {
+    if (e) e.preventDefault();
+    const pad = 12;
+    const maxX = questionContainer.clientWidth - noBtn.offsetWidth - pad;
+    const maxY = questionContainer.clientHeight - noBtn.offsetHeight - pad;
+    const yes = yesBtn.getBoundingClientRect();
+    let x, y, guard = 0;
+    do {
+      x = pad + Math.floor(Math.random() * (maxX - pad));
+      y = pad + Math.floor(Math.random() * (maxY - pad));
+      guard++;
+    } while (guard < 30 &&
+      x < yes.right + 20 && x + noBtn.offsetWidth > yes.left - 20 &&
+      y < yes.bottom + 20 && y + noBtn.offsetHeight > yes.top - 20);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    tries++;
+    hint.textContent = teases[(tries - 1) % teases.length];
+    // Yes grows a little every time
+    const scale = Math.min(1 + tries * 0.12, 2.2);
+    yesBtn.style.transform = `scale(${scale})`;
+  }
+
+  noBtn.addEventListener("mouseover", runAway);   // desktop
+  noBtn.addEventListener("touchstart", runAway, { passive: false }); // mobile
+  noBtn.addEventListener("click", runAway);        // keyboard fallback
+
+  function floatHearts() {
+    const icons = ["💖", "💕", "💗", "❤️", "💘"];
+    for (let i = 0; i < 28; i++) {
+      const h = document.createElement("span");
+      h.className = "float-heart";
+      h.textContent = icons[i % icons.length];
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.animationDuration = 3 + Math.random() * 3 + "s";
+      h.style.animationDelay = Math.random() * 1.5 + "s";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 7000);
+    }
+  }
+
+  yesBtn.addEventListener("click", () => {
+    questionContainer.classList.add("hidden");
+    heartLoader.classList.remove("hidden");
+    setTimeout(() => {
+      heartLoader.classList.add("hidden");
+      resultContainer.classList.remove("hidden");
+      floatHearts();
+    }, 3000);
+  });
+
+  againBtn.addEventListener("click", () => {
+    resultContainer.classList.add("hidden");
+    questionContainer.classList.remove("hidden");
+    tries = 0; hint.textContent = "";
+    yesBtn.style.transform = "scale(1)";
+    requestAnimationFrame(placeNoInitially);
+  });
+
+  window.addEventListener("load", placeNoInitially);
+  window.addEventListener("resize", placeNoInitially);
+</script>
+</body>
+</html>
